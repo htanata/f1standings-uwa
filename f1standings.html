@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Copyright (c) 2007, Hendy Tanata
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the copyright owner nor the names of contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:widget="http://www.netvibes.com/ns/">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta name="author" content="Hendy Tanata" />
+    <meta name="description" content="F1 drivers and constructors standings." />
+    <meta name="version" content="0.1" />
+    <meta name="keywords" content="f1, formula 1, formula1" />
+    <meta name="website" content="http://codeftw.blogspot.com" />
+    <meta name="apiVersion" content="1.0" />
+    <meta name="inline" content="true" />
+    <meta name="debugMode" content="false" />
+
+    <link rel="stylesheet" type="text/css"
+      href="http://www.netvibes.com/themes/uwa/style.css" />
+    <script type="text/javascript"
+      src="http://www.netvibes.com/js/UWA/load.js.php?env=Standalone"></script>
+
+    <title>F1 Standings</title>
+    <link rel="icon" type="image/gif"
+      href="http://www.netvibes.com/img/icons/flag_red.gif" />
+
+    <style type="text/css">
+      table.nv-datagrid td {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 0px;
+        padding: 0px;
+        margin: 0px;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var F1StandingsWidget = {
+        driverSourceUrl: 'http://www.formula1.com/results/driver/',
+        constructorSourceUrl: 'http://www.formula1.com/results/team/',
+        TabView: {},
+
+        parseDriverStanding: function(text) {
+          driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          content = F1StandingsWidget.parseStanding(text, driversRegex);
+          F1StandingsWidget.TabView.tabs.setContent("drivers", content);
+        },
+
+        parseConstructorStanding: function(text) {
+          constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          content = F1StandingsWidget.parseStanding(text, constructorsRegex);
+          F1StandingsWidget.TabView.tabs.setContent("constructors", content);
+        },
+
+        parseStanding: function(text, regex) {
+          var rows = regex.exec(text);
+          var content = '<table class="nv-datagrid"><tbody>';
+          while (rows) {
+            content += F1StandingsWidget.createRow(rows[1], rows[2], rows[3]);
+            rows = regex.exec(text);
+          }
+          content += '</tbody></table>';
+          return content;
+        },
+
+        createRow: function(pos, name, points) {
+          return '<tr><td>' + pos + '</td><td>' + name + '</td><td>' + points + '</td></tr>';
+        }
+      }
+
+      widget.onLoad = function() {
+        var tabs = new UWA.Controls.TabView();
+        F1StandingsWidget.TabView.tabs = tabs;
+
+        // Create tab items
+        tabs.addTab("drivers", {text: "Drivers", customInfo: "custom"});
+        tabs.addTab("constructors", {text: "Constructors"});
+
+        // Set proxy for local testing.
+        if (document.location && document.location.hostname == 'localhost') {
+          UWA.proxies.ajax = 'ajaxProxy.php';
+        }
+
+        // Retrieve data source.
+        UWA.Data.getText(F1StandingsWidget.driverSourceUrl, F1StandingsWidget.parseDriverStanding);
+        UWA.Data.getText(F1StandingsWidget.constructorSourceUrl, F1StandingsWidget.parseConstructorStanding);
+
+        // Put contents in tabs.
+        tabs.setContent("drivers", "Loading ...");
+        tabs.setContent("constructors", "Loading ...");
+
+        // Restore saved active tab.
+        var activeTab = widget.getValue("activeTab");
+        if (activeTab) {
+          tabs.selectTab(activeTab);
+        }
+
+        // Register to activeTabChange event.
+        tabs.observe('activeTabChange', F1StandingsWidget.TabView.onActiveTabChanged);
+
+        widget.setBody('');
+
+        // Append tabview to widget body.
+        tabs.appendTo(widget.body);
+      }
+
+      F1StandingsWidget.TabView.onActiveTabChanged = function(name, data) {
+        // Save active tab.
+        widget.setValue("activeTab", name);
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
