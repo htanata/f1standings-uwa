@@ -102,7 +102,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         F1StandingsWidget.TabView.tabs = tabs;
 
         // Create tab items
-        tabs.addTab("drivers", {text: "Drivers", customInfo: "custom"});
+        tabs.addTab("drivers", {text: "Drivers"});
         tabs.addTab("constructors", {text: "Constructors"});
 
         // Set proxy for local testing.
@@ -115,8 +115,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         UWA.Data.getText(F1StandingsWidget.constructorSourceUrl, F1StandingsWidget.parseConstructorStanding);
 
         // Put contents in tabs.
-        tabs.setContent("drivers", "Loading ...");
-        tabs.setContent("constructors", "Loading ...");
+        tabs.setContent("drivers", "Loading...");
+        tabs.setContent("constructors", "Loading...");
 
         // Restore saved active tab.
         var activeTab = widget.getValue("activeTab");
