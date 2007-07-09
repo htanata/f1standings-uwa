@@ -53,6 +53,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <link rel="icon" type="image/gif"
       href="http://www.netvibes.com/img/icons/flag_red.gif" />
 
+    <widget:preferences>
+      <preference name="itemsPerPage" type="range" label="Items per page"
+        defaultValue="8" step="1" min="1" max="24" />
+    </widget:preferences>
+
     <style type="text/css">
       table.nv-datagrid td {
         border-top: 0px;
@@ -68,32 +73,74 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         driverSourceUrl: 'http://www.formula1.com/results/driver/',
         constructorSourceUrl: 'http://www.formula1.com/results/team/',
         TabView: {},
+        driverRows: [],
+        constructorRows: [],
 
         parseDriverStanding: function(text) {
-          driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
-          content = F1StandingsWidget.parseStanding(text, driversRegex);
-          F1StandingsWidget.TabView.tabs.setContent("drivers", content);
+          var driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          F1StandingsWidget.parseStandings(text, "drivers", driversRegex);
         },
 
         parseConstructorStanding: function(text) {
-          constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>(\d+)<\/td>/g;
-          content = F1StandingsWidget.parseStanding(text, constructorsRegex);
-          F1StandingsWidget.TabView.tabs.setContent("constructors", content);
+          var constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          F1StandingsWidget.parseStandings(text, "constructors", constructorsRegex);
         },
 
-        parseStanding: function(text, regex) {
-          var rows = regex.exec(text);
-          var content = '<table class="nv-datagrid"><tbody>';
-          while (rows) {
-            content += F1StandingsWidget.createRow(rows[1], rows[2], rows[3]);
-            rows = regex.exec(text);
+        parseStandings: function(text, tabName, regex) {
+          var match = regex.exec(text);
+
+          var masterRows = F1StandingsWidget.getMasterRows(tabName);
+
+          var content = '';
+          for(var i = 0; match; i++) {
+            masterRows[i] = F1StandingsWidget.createRow(match[1], match[2], match[3]);
+            if(i < widget.getValue('itemsPerPage')) {
+              content += masterRows[i];
+            }
+            match = regex.exec(text);
           }
+          content = F1StandingsWidget.createLayout(content, tabName, 1);
+          F1StandingsWidget.TabView.tabs.setContent(tabName, content);
+        },
+
+        createLayout: function(text, tabName, currentPage) {
+          var content = '<table class="nv-datagrid"><tbody>';
+          content += text;
           content += '</tbody></table>';
+          content += '<div class="nv-pager">';
+          if(currentPage != 1) {
+            content += '<a rel="prev" class="prev" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage - 1) + ')">previous</a>'
+          }
+          if(currentPage * widget.getValue('itemsPerPage') <= F1StandingsWidget.getMasterRows(tabName).length) {
+            content += '<a rel="next" class="next" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage + 1) + ')">next</a>';
+          }
+          content += '</div>';
           return content;
+        },
+
+        showPage: function(tabName, page) {
+          var rowsPerPage = widget.getValue('itemsPerPage');
+          var masterRows = F1StandingsWidget.getMasterRows(tabName);
+
+          var rows = '';
+          for(var i = rowsPerPage * (page - 1); (i < rowsPerPage * page) && (i < masterRows.length); i++) {
+            rows += masterRows[i];
+          }
+          content = F1StandingsWidget.createLayout(rows, tabName, page);
+          F1StandingsWidget.TabView.tabs.setContent(tabName, content);
         },
 
         createRow: function(pos, name, points) {
           return '<tr><td>' + pos + '</td><td>' + name + '</td><td>' + points + '</td></tr>';
+        },
+
+        getMasterRows: function(tabName) {
+          switch (tabName) {
+            case "drivers":
+              return F1StandingsWidget.driverRows;
+            case "constructors":
+              return F1StandingsWidget.constructorRows;
+          }
         }
       }
 
@@ -134,6 +181,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       }
 
       F1StandingsWidget.TabView.onActiveTabChanged = function(name, data) {
+        widget.callback("onUpdateBody");
         // Save active tab.
         widget.setValue("activeTab", name);
       }
