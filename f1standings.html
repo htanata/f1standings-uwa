@@ -112,7 +112,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           if(currentPage != 1) {
             content += '<a rel="prev" class="prev" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage - 1) + ')">previous</a>'
           }
-          if(currentPage * widget.getValue('itemsPerPage') <= F1StandingsWidget.getMasterRows(tabName).length) {
+          if(currentPage * widget.getValue('itemsPerPage') < F1StandingsWidget.getMasterRows(tabName).length) {
             content += '<a rel="next" class="next" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage + 1) + ')">next</a>';
           }
           content += '</div>';
