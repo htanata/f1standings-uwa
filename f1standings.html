@@ -77,17 +77,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         driverRows: [],
         constructorRows: [],
 
-        parseDriverStanding: function(text) {
+        parseDriverStanding: function (text) {
           var driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
           F1StandingsWidget.parseStandings(text, "drivers", driversRegex);
         },
 
-        parseConstructorStanding: function(text) {
+        parseConstructorStanding: function (text) {
           var constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>(\d+)<\/td>/g;
           F1StandingsWidget.parseStandings(text, "constructors", constructorsRegex);
         },
 
-        parseStandings: function(text, tabName, regex) {
+        parseStandings: function (text, tabName, regex) {
           var match = regex.exec(text);
           var masterRows = F1StandingsWidget.getMasterRows(tabName);
 
@@ -106,7 +106,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
 
         // Create table and navigation buttons.
-        createLayout: function(text, tabName, currentPage) {
+        createLayout: function (text, tabName, currentPage) {
           var content = '<table class="nv-datagrid"><tbody>';
           content += text;
           content += '<\/tbody><\/table>';
@@ -121,7 +121,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           return content;
         },
 
-        showPage: function(tabName, page) {
+        showPage: function (tabName, page) {
           var rowsPerPage = widget.getValue('itemsPerPage');
           var masterRows = F1StandingsWidget.getMasterRows(tabName);
 
@@ -135,11 +135,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           F1StandingsWidget.TabView.tabs.setContent(tabName, content);
         },
 
-        createRow: function(pos, name, points) {
+        createRow: function (pos, name, points) {
           return '<tr><td>' + pos + '<\/td><td>' + name + '<\/td><td>' + points + '<\/td><\/tr>';
         },
 
-        getMasterRows: function(tabName) {
+        getMasterRows: function (tabName) {
           switch (tabName) {
             case "drivers":
               return F1StandingsWidget.driverRows;
@@ -149,7 +149,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }
       };
 
-      widget.onLoad = function() {
+      widget.onLoad = function () {
         var tabs = new UWA.Controls.TabView();
         F1StandingsWidget.TabView.tabs = tabs;
 
@@ -185,7 +185,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         tabs.appendTo(widget.body);
       };
 
-      F1StandingsWidget.TabView.onActiveTabChanged = function(name, data) {
+      F1StandingsWidget.TabView.onActiveTabChanged = function (name, data) {
         widget.callback("onUpdateBody");
         // Save active tab.
         widget.setValue("activeTab", name);
