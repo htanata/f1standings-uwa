@@ -89,13 +89,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         parseStandings: function(text, tabName, regex) {
           var match = regex.exec(text);
-
           var masterRows = F1StandingsWidget.getMasterRows(tabName);
 
           var content = '';
-          for(var i = 0; match; i++) {
+
+          var i;
+          for (i = 0; match; i++) {
             masterRows[i] = F1StandingsWidget.createRow(match[1], match[2], match[3]);
-            if(i < widget.getValue('itemsPerPage')) {
+            if (i < widget.getValue('itemsPerPage')) {
               content += masterRows[i];
             }
             match = regex.exec(text);
@@ -104,18 +105,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           F1StandingsWidget.TabView.tabs.setContent(tabName, content);
         },
 
+        // Create table and navigation buttons.
         createLayout: function(text, tabName, currentPage) {
           var content = '<table class="nv-datagrid"><tbody>';
           content += text;
-          content += '</tbody></table>';
+          content += '<\/tbody><\/table>';
           content += '<div class="nv-pager">';
-          if(currentPage != 1) {
-            content += '<a rel="prev" class="prev" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage - 1) + ')">previous</a>'
+          if (currentPage !== 1) {
+            content += '<a rel="prev" class="prev" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage - 1) + ')">previous<\/a>';
           }
-          if(currentPage * widget.getValue('itemsPerPage') < F1StandingsWidget.getMasterRows(tabName).length) {
-            content += '<a rel="next" class="next" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage + 1) + ')">next</a>';
+          if (currentPage * widget.getValue('itemsPerPage') < F1StandingsWidget.getMasterRows(tabName).length) {
+            content += '<a rel="next" class="next" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage + 1) + ')">next<\/a>';
           }
-          content += '</div>';
+          content += '<\/div>';
           return content;
         },
 
@@ -124,7 +126,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           var masterRows = F1StandingsWidget.getMasterRows(tabName);
 
           var rows = '';
-          for(var i = rowsPerPage * (page - 1); (i < rowsPerPage * page) && (i < masterRows.length); i++) {
+
+          var i;
+          for (i = rowsPerPage * (page - 1); (i < rowsPerPage * page) && (i < masterRows.length); i++) {
             rows += masterRows[i];
           }
           content = F1StandingsWidget.createLayout(rows, tabName, page);
@@ -132,7 +136,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         },
 
         createRow: function(pos, name, points) {
-          return '<tr><td>' + pos + '</td><td>' + name + '</td><td>' + points + '</td></tr>';
+          return '<tr><td>' + pos + '<\/td><td>' + name + '<\/td><td>' + points + '<\/td><\/tr>';
         },
 
         getMasterRows: function(tabName) {
@@ -143,7 +147,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               return F1StandingsWidget.constructorRows;
           }
         }
-      }
+      };
 
       widget.onLoad = function() {
         var tabs = new UWA.Controls.TabView();
@@ -154,7 +158,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         tabs.addTab("constructors", {text: "Constructors"});
 
         // Set proxy for local testing.
-        if (document.location && document.location.hostname == 'localhost') {
+        if (document.location && document.location.hostname === 'localhost') {
           UWA.proxies.ajax = 'ajaxProxy.php';
         }
 
@@ -179,13 +183,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         // Append tabview to widget body.
         tabs.appendTo(widget.body);
-      }
+      };
 
       F1StandingsWidget.TabView.onActiveTabChanged = function(name, data) {
         widget.callback("onUpdateBody");
         // Save active tab.
         widget.setValue("activeTab", name);
-      }
+      };
     </script>
   </head>
   <body>
