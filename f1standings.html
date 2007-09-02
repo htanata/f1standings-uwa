@@ -57,6 +57,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <preference name="itemsPerPage" type="range" label="Items per page"
         defaultValue="8" step="1" min="1" max="24" />
       <preference name="activeTab" type="hidden" defaultValue="drivers" />
+      <preference name="driversOffset" type="hidden" defaultValue="0" />
+      <preference name="constructorsOffset" type="hidden" defaultValue="0" />
     </widget:preferences>
 
     <style type="text/css">
@@ -76,6 +78,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         TabView: {},
         driverRows: [],
         constructorRows: [],
+        driverPager: {},
+        constructorPager: {},
 
         parseDriverStanding: function (text) {
           var driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
@@ -96,43 +100,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           var i;
           for (i = 0; match; i++) {
             masterRows[i] = F1StandingsWidget.createRow(match[1], match[2], match[3]);
-            if (i < widget.getValue('itemsPerPage')) {
-              content += masterRows[i];
-            }
             match = regex.exec(text);
           }
-          content = F1StandingsWidget.createLayout(content, tabName, 1);
-          F1StandingsWidget.TabView.tabs.setContent(tabName, content);
+
+          F1StandingsWidget.showPage(tabName);
         },
 
-        // Create table and navigation buttons.
-        createLayout: function (text, tabName, currentPage) {
+        // Create table and paging placeholder.
+        createLayout: function (text, tabName) {
           var content = '<table class="nv-datagrid"><tbody>';
           content += text;
-          content += '<\/tbody><\/table>';
-          content += '<div class="nv-pager">';
-          if (currentPage !== 1) {
-            content += '<a rel="prev" class="prev" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage - 1) + ')">previous<\/a>';
-          }
-          if (currentPage * widget.getValue('itemsPerPage') < F1StandingsWidget.getMasterRows(tabName).length) {
-            content += '<a rel="next" class="next" href="javascript:;" onclick="F1StandingsWidget.showPage(\'' + tabName + '\', ' + String(currentPage + 1) + ')">next<\/a>';
-          }
-          content += '<\/div>';
+          content += '<\/tbody><\/table><div class="paging"><\/div>';
           return content;
         },
 
-        showPage: function (tabName, page) {
-          var rowsPerPage = widget.getValue('itemsPerPage');
-          var masterRows = F1StandingsWidget.getMasterRows(tabName);
+        showPage: function (tabName) {
+          var rowsPerPage = parseInt(widget.getValue('itemsPerPage'), 10);
+          var offset = parseInt(widget.getValue(tabName + 'Offset'), 10);
 
+          var masterRows = F1StandingsWidget.getMasterRows(tabName);
           var rows = '';
 
+          var lastPageRow = offset + rowsPerPage;
           var i;
-          for (i = rowsPerPage * (page - 1); (i < rowsPerPage * page) && (i < masterRows.length); i++) {
+          for (i = offset; (i < lastPageRow) && (i < masterRows.length); i++) {
             rows += masterRows[i];
           }
-          content = F1StandingsWidget.createLayout(rows, tabName, page);
+
+          var pager = new UWA.Controls.Pager( {
+              module: widget,
+              limit: widget.getValue('itemsPerPage'),
+              offset: widget.getValue(tabName + 'Offset'),
+              dataArray: masterRows
+          } );
+
+          pager.onChange = function (newOffset) {
+            widget.setValue(tabName + 'Offset', newOffset);
+            F1StandingsWidget.showPage(tabName);
+          };
+
+          content = F1StandingsWidget.createLayout(rows, tabName);
           F1StandingsWidget.TabView.tabs.setContent(tabName, content);
+
+          // Find the paging div of the tab and set the content to pager's content.
+          var currentTab = F1StandingsWidget.TabView.tabs.getTabContent(tabName);
+          var pagerContainer = UWA.$element(currentTab.getElementsByClassName('paging')[0]);
+          pagerContainer.setContent(pager.getContent());
         },
 
         createRow: function (pos, name, points) {
@@ -150,6 +163,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       };
 
       widget.onLoad = function () {
+        // Reset saved values.
+        widget.setValue('driversOffset', 0);
+        widget.setValue('constructorsOffset', 0);
+
         var tabs = new UWA.Controls.TabView();
         F1StandingsWidget.TabView.tabs = tabs;
 
