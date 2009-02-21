@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <meta name="website" content="http://codeftw.blogspot.com" />
     <meta name="screenshot" content="http://widgetftw.googlepages.com/f1standings-uwa_screen-280.png" />
     <meta name="thumbnail" content="http://widgetftw.googlepages.com/f1standings-uwa_screen-120.png" />
-    <meta name="apiVersion" content="1.0" />
+    <meta name="apiVersion" content="1.2" />
     <meta name="inline" content="true" />
     <meta name="debugMode" content="false" />
 
@@ -176,11 +176,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         // Create tab items
         tabs.addTab("drivers", {text: "Drivers"});
         tabs.addTab("constructors", {text: "Constructors"});
-
-        // Set proxy for local testing.
-        if (document.location && document.location.hostname === 'localhost') {
-          UWA.proxies.ajax = 'ajaxProxy.php';
-        }
 
         // Retrieve data source.
         UWA.Data.getText(F1StandingsWidget.driverSourceUrl, F1StandingsWidget.parseDriverStanding);
