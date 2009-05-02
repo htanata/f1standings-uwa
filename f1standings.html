@@ -85,12 +85,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         constructorPager: {},
 
         parseDriverStanding: function (text) {
-          var driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          var driversRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+> *(.+)<\/a><\/td>\s+<td>.+<\/td>\s+<td><a.+>.+<\/a><\/td>\s+<td>([\d\.]+)<\/td>/g;
           F1StandingsWidget.parseStandings(text, "drivers", driversRegex);
         },
 
         parseConstructorStanding: function (text) {
-          var constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>(\d+)<\/td>/g;
+          var constructorsRegex = /<tr>\s+<td>(\d+)=?<\/td>\s+<td><a.+>(.+)<\/a><\/td>\s+<td>([\d\.]+)<\/td>/g;
           F1StandingsWidget.parseStandings(text, "constructors", constructorsRegex);
         },
 
