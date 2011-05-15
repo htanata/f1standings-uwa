@@ -3,7 +3,7 @@
 Formula 1 drivers and constructors standings widget. Can be installed on
 Netvibes, iGoogle, etc.
 
-[![Screenshot](http://widgetftw.googlepages.com/f1standings-uwa_screen.png "Visit install page")](http://eco.netvibes.com/widgets/200927/f1-drivers-and-constructors-standings)
+[![Screenshot](http://sites.google.com/site/widgetftw/f1standings-uwa_screen.png "Visit install page")](http://eco.netvibes.com/widgets/200927/f1-drivers-and-constructors-standings)
 
 [![Add to Netvibes](http://eco.netvibes.com/img/add2netvibes.png "Add to Netvibes")](http://eco.netvibes.com/widgets/200927/f1-drivers-and-constructors-standings)
 
