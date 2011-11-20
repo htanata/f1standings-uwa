@@ -12,4 +12,4 @@ Netvibes, iGoogle, etc.
 ## License
 Copyright (c) 2007 Hendy Tanata<br>
 All Rights Reserved.<br>
-Released under the MIT License.
+Released under the New BSD License.
