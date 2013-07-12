@@ -131,10 +131,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           }
 
           var pager = new UWA.Controls.Pager( {
-              module: widget,
-              limit: widget.getValue('itemsPerPage'),
-              offset: widget.getValue(tabName + 'Offset'),
-              dataArray: masterRows
+            module: widget,
+            limit: widget.getValue('itemsPerPage'),
+            offset: widget.getValue(tabName + 'Offset'),
+            dataArray: masterRows
           } );
 
           pager.onChange = function (newOffset) {
